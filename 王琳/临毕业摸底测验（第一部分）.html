@@ -1,0 +1,779 @@
+<!DOCTYPE html><html><head><title>JavaScript （前端玩家必备技能）</title><meta charset='utf-8'><link href='https://dn-maxiang.qbox.me/res-min/themes/marxico.css' rel='stylesheet'><style>.note-content  {font-family: 'Helvetica Neue', Arial, 'Hiragino Sans GB', STHeiti, 'Microsoft YaHei', 'WenQuanYi Micro Hei', SimSun, Song, sans-serif;}
+
+
+</style></head><body><div id='preview-contents' class='note-content'>
+                        
+                    
+
+<h3 id="javascript-前端玩家必备技能">JavaScript （前端玩家必备技能）</h3>
+
+<ol start="1"><li rel="1">ele.getAttribute(‘propName’) 和 ele.propName区别</li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs crmsh"><div class="hljs-line">e.getAttribute()，是标准DOM操作文档元素属性的方法，具有通用性可在任意文档上使用，返回元素在源文件中设置的属性
+</div><div class="hljs-line">e.propName通常是在HTML文档中访问特定元素的特性，浏览器解析元素后生成对应对象（如a标签生成HTMLAnchorElement），这些对象的特性会根据特定规则结合属性设置得到，对于没有对应特性的属性，只能使用getAttribute进行访问
+</div><div class="hljs-line">e.getAttribute()返回值是源文件中设置的值，类型是字符串或者null（有的实现返回<span class="hljs-string">""</span>）
+</div><div class="hljs-line">e.propName返回值可能是字符串、布尔值、对象、undefined等
+</div><div class="hljs-line">大部分<span class="hljs-keyword">attribute</span>与<span class="hljs-keyword">property</span><span class="hljs-title"></span>是一一对应关系，修改其中一个会影响另一个，如id，title等属性
+</div><div class="hljs-line">一些布尔属性<span class="hljs-tag">&lt;input hidden/&gt;</span>的检测设置需要hasAttribute和removeAttribute来完成，或者设置对应<span class="hljs-keyword">property</span><span class="hljs-title">
+</span></div><div class="hljs-line">像<span class="hljs-tag">&lt;a href="../index.html"&gt;</span>link<span class="hljs-tag">&lt;/a&gt;</span>中href属性，转换成<span class="hljs-keyword">property</span><span class="hljs-title"></span>的时候需要通过转换得到完整URL
+</div><div class="hljs-line">一些<span class="hljs-keyword">attribute</span>和<span class="hljs-keyword">property</span><span class="hljs-title"></span>不是一一对应如：form控件中<span class="hljs-tag">&lt;input value="hello"/&gt;</span>对应的是defaultValue，修改或设置value <span class="hljs-keyword">property</span><span class="hljs-title"></span>修改的是控件当前值，setAttribute修改value属性不会改变value <span class="hljs-keyword">property</span><span class="hljs-title"></span>
+</div></code></pre>
+
+<ol start="2"><li rel="2">mouseover和mouseenter的区别</li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs xml"><div class="hljs-line">1. mouseover/mouseout是标准事件，所有浏览器都支持；
+</div><div class="hljs-line">mouseenter/mouseleave是IE5.5引入的特有事件后来被DOM3标准采纳，
+</div><div class="hljs-line">现代标准浏览器也支持
+</div><div class="hljs-line">2. mouseover/mouseout是冒泡事件；mouseenter/mouseleave不冒泡。需
+</div><div class="hljs-line">要为多个元素监听鼠标移入/出事件时，推荐mouseover/mouseout托
+</div><div class="hljs-line">管，提高性能
+</div><div class="hljs-line">3. 标准事件模型中event.target表示发生移入/出的元素,vent.relatedTarget对
+</div><div class="hljs-line">应移出/如元素；在老IE中event.srcElement表示发生移入/出的元
+</div><div class="hljs-line">素，event.toElement表示移出的目标元素，event.fromElement表示移
+</div><div class="hljs-line">入时的来源元素
+</div><div class="hljs-line">例子：鼠标从div#target元素移出时进行处理，判断逻辑如下：
+</div><div class="hljs-line"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"target"</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>test<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</div><div class="hljs-line"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/javascript"</span>&gt;</span><span class="javascript">
+</span></div><div class="hljs-line"><span class="hljs-keyword">var</span> target = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">'target'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">if</span> (target.addEventListener) {
+</div><div class="hljs-line">target.addEventListener(<span class="hljs-string">'mouseout'</span>, mouseoutHandler,
+</div><div class="hljs-line"><span class="hljs-literal">false</span>);
+</div><div class="hljs-line">} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (target.attachEvent) {
+</div><div class="hljs-line">target.attachEvent(<span class="hljs-string">'onmouseout'</span>, mouseoutHandler);
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">mouseoutHandler</span>(<span class="hljs-params">e</span>) </span>{
+</div><div class="hljs-line">e = e || <span class="hljs-built_in">window</span>.event;
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> target = e.target || e.srcElement;
+</div><div class="hljs-line"><span class="hljs-comment">// 判断移出鼠标的元素是否为目标元素</span>
+</div><div class="hljs-line"><span class="hljs-keyword">if</span> (target.id !== <span class="hljs-string">'target'</span>) {
+</div><div class="hljs-line"><span class="hljs-keyword">return</span>;
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-comment">// 判断鼠标是移出元素还是移到子元素</span>
+</div><div class="hljs-line"><span class="hljs-keyword">var</span> relatedTarget = event.relatedTarget || e.toElemen
+</div><div class="hljs-line">t;
+</div><div class="hljs-line"><span class="hljs-keyword">while</span> (relatedTarget !== target
+</div><div class="hljs-line">&amp;&amp; relatedTarget.nodeName.toUpperCase() !== <span class="hljs-string">'BODY'</span>)
+</div><div class="hljs-line">{
+</div><div class="hljs-line">relatedTarget = relatedTarget.parentNode;
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-comment">// 如果相等，说明鼠标在元素内部移动</span>
+</div><div class="hljs-line"><span class="hljs-keyword">if</span> (relatedTarget === target) {
+</div><div class="hljs-line"><span class="hljs-keyword">return</span>;
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-comment">// 执行需要操作</span>
+</div><div class="hljs-line"><span class="hljs-comment">//alert('鼠标移出');</span>
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</div><div class="hljs-line"><wbr>
+</div></code></pre>
+
+<ol start="3"><li rel="3">什么是事件代理</li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs"><div class="hljs-line">在传统的事件处理中，你按照需要为每一个元素添加或者是删除事件处理器。然而，事件处理器将有可能导致内存泄露或者是性能下降——你用得越多这种风险就越大。JavaScript事件代理则是一种简单的技巧，通过它你可以把事件处理器添加到一个父级元素上，这样就避免了把事件处理器添加到多个子级元素上。
+</div></code></pre>
+
+<ol start="4"><li rel="4">localStorage和cookie的区别，cookie和session的关系！</li>
+</ol>
+
+<pre class="prettyprint hljs-dark"><code class="hljs lsl"><div class="hljs-line">sessionStorage,localStorage,cookie区别
+</div><div class="hljs-line"><span class="hljs-number">1.</span> 都会在浏览器端保存，有大小限制，同源限制
+</div><div class="hljs-line"><span class="hljs-number">2.</span> cookie会在请求时发送到服务器，作为会话标识，服务器可修改cookie；
+</div><div class="hljs-line">web storage不会发送到服务器
+</div><div class="hljs-line"><span class="hljs-number">3.</span> cookie有path概念，子路径可以访问父路径cookie，父路径不能访问子路
+</div><div class="hljs-line">径cookie
+</div><div class="hljs-line"><span class="hljs-number">4.</span> 有效期：cookie在设置的有效期内有效，默认为浏览器关闭；
+</div><div class="hljs-line">sessionStorage在窗口关闭前有效，localStorage长期有效，直到用户删除
+</div><div class="hljs-line"><span class="hljs-number">5.</span> 共享：sessionStorage不能共享，localStorage在同源文档之间共享，
+</div><div class="hljs-line">cookie在同源且符合path规则的文档之间共享
+</div><div class="hljs-line"><span class="hljs-number">6.</span> localStorage的修改会促发其他文档窗口的update事件
+</div><div class="hljs-line"><span class="hljs-number">7.</span> cookie有secure属性要求HTTPS传输
+</div><div class="hljs-line"><span class="hljs-number">8.</span> 浏览器不能保存超过<span class="hljs-number">300</span>个cookie，单个服务器不能超过<span class="hljs-number">20</span>个，每个
+</div><div class="hljs-line">cookie不能超过<span class="hljs-number">4</span>k。web storage大小支持能达到<span class="hljs-number">5</span>M
+</div><div class="hljs-line"><wbr>
+</div></code></pre>
+
+<ol start="5"><li rel="5">什么是闭包，你在项目中哪一块用到了闭包！</li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs markdown"><div class="hljs-line">什么闭包,闭包有什么用
+</div><div class="hljs-line">闭包是在某个作用域内定义的函数，它可以访问这个作用域内的所有变量。闭
+</div><div class="hljs-line">包作用域链通常包括三个部分：
+</div><div class="hljs-line"><span class="hljs-bullet">1. </span>函数本身作用域。
+</div><div class="hljs-line"><span class="hljs-bullet">2. </span>闭包定义时的作用域。
+</div><div class="hljs-line"><span class="hljs-bullet">3. </span>全局作用域。
+</div><div class="hljs-line">闭包常见用途：
+</div><div class="hljs-line"><span class="hljs-bullet">1. </span>创建特权方法用于访问控制
+</div><div class="hljs-line"><span class="hljs-bullet">2. </span>事件处理程序及回调
+</div><div class="hljs-line"><wbr>
+</div></code></pre>
+
+<ol start="6"><li rel="6">js中定义函数的方式有哪些，区别是什么！</li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs fortran"><div class="hljs-line">javascript有哪几种方法定义函数
+</div><div class="hljs-line"><span class="hljs-number">1.</span> 函数声明表达式
+</div><div class="hljs-line"><span class="hljs-number">2.</span> <span class="hljs-function"><span class="hljs-keyword">function</span></span>操作符
+</div><div class="hljs-line"><span class="hljs-number">3.</span> <span class="hljs-function"><span class="hljs-keyword">Function</span></span> 构造函数
+</div><div class="hljs-line"><span class="hljs-number">4.</span> ES6:arrow <span class="hljs-function"><span class="hljs-keyword">function</span></span>
+</div><div class="hljs-line">重要参考资料：MDN:Functions_and_function_scope
+</div><div class="hljs-line"><wbr>
+</div></code></pre>
+
+<ol start="7"><li rel="7">说出你掌握的继承方式及优缺点，并加以改进！</li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Shape</span>(<span class="hljs-params"></span>) </span>{}
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Rect</span>(<span class="hljs-params"></span>) </span>{}
+</div><div class="hljs-line"><span class="hljs-comment">// 方法1</span>
+</div><div class="hljs-line">Rect.prototype = <span class="hljs-keyword">new</span> Shape();
+</div><div class="hljs-line"><span class="hljs-comment">// 方法2</span>
+</div><div class="hljs-line">Rect.prototype = Shape.prototype;
+</div><div class="hljs-line"><span class="hljs-comment">// 方法3</span>
+</div><div class="hljs-line">Rect.prototype = <span class="hljs-built_in">Object</span>.create(Shape.prototype);
+</div><div class="hljs-line">Rect.prototype.area = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line"><span class="hljs-comment">// do something</span>
+</div><div class="hljs-line">};
+</div><div class="hljs-line">方法<span class="hljs-number">1</span>：
+</div><div class="hljs-line"><span class="hljs-number">1.</span> 优点：正确设置原型链实现继承
+</div><div class="hljs-line"><span class="hljs-number">2.</span> 优点：父类实例属性得到继承，原型链查找效率提高，也能为一些属性提
+</div><div class="hljs-line">供合理的默认值
+</div><div class="hljs-line"><span class="hljs-number">3.</span> 缺点：父类实例属性为引用类型时，不恰当地修改会导致所有子类被修改
+</div><div class="hljs-line"><span class="hljs-number">4.</span> 缺点：创建父类实例作为子类原型时，可能无法确定构造函数需要的合理
+</div><div class="hljs-line">参数，这样提供的参数继承给子类没有实际意义，当子类需要这些参数时
+</div><div class="hljs-line">应该在构造函数中进行初始化和设置
+</div><div class="hljs-line"><span class="hljs-number">5.</span> 总结：继承应该是继承方法而不是属性，为子类设置父类实例属性应该是
+</div><div class="hljs-line">通过在子类构造函数中调用父类构造函数进行初始化
+</div><div class="hljs-line">方法<span class="hljs-number">2</span>：
+</div><div class="hljs-line"><span class="hljs-number">1.</span> 优点：正确设置原型链实现继承
+</div><div class="hljs-line"><span class="hljs-number">2.</span> 缺点：父类构造函数原型与子类相同。修改子类原型添加方法会修改父类
+</div><div class="hljs-line">方法<span class="hljs-number">3</span>：
+</div><div class="hljs-line"><span class="hljs-number">1.</span> 优点：正确设置原型链且避免方法<span class="hljs-number">1.2</span>中的缺点
+</div><div class="hljs-line"><span class="hljs-number">2.</span> 缺点：ES5方法需要注意兼容性
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Shape</span>(<span class="hljs-params"></span>) </span>{}
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Rect</span>(<span class="hljs-params"></span>) </span>{}
+</div><div class="hljs-line"><span class="hljs-comment">// 方法1</span>
+</div><div class="hljs-line">Rect.prototype = <span class="hljs-keyword">new</span> Shape();
+</div><div class="hljs-line"><span class="hljs-comment">// 方法2</span>
+</div><div class="hljs-line">Rect.prototype = Shape.prototype;
+</div><div class="hljs-line"><span class="hljs-comment">// 方法3</span>
+</div><div class="hljs-line">Rect.prototype = <span class="hljs-built_in">Object</span>.create(Shape.prototype);
+</div><div class="hljs-line">Rect.prototype.area = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line"><span class="hljs-comment">// do something</span>
+</div><div class="hljs-line">};
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">改进：
+</div><div class="hljs-line"><span class="hljs-number">1.</span> 所有三种方法应该在子类构造函数中调用父类构造函数实现实例属性初始
+</div><div class="hljs-line">化
+</div><div class="hljs-line"><span class="hljs-number">2.</span> 用新创建的对象替代子类默认原型，设置 Rect.prototype.constructor
+</div><div class="hljs-line">= Rect; 保证一致性
+</div><div class="hljs-line"><span class="hljs-number">3.</span> 第三种方法的polyfill：
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Rect</span>(<span class="hljs-params"></span>) </span>{
+</div><div class="hljs-line">Shape.call(<span class="hljs-keyword">this</span>);
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-number">1.</span>
+</div><div class="hljs-line"><span class="hljs-number">2.</span>
+</div><div class="hljs-line"><span class="hljs-number">3.</span>
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">create</span>(<span class="hljs-params">obj</span>) </span>{
+</div><div class="hljs-line"><span class="hljs-keyword">if</span> (<span class="hljs-built_in">Object</span>.create) {
+</div><div class="hljs-line"><span class="hljs-keyword">return</span> <span class="hljs-built_in">Object</span>.create(obj);
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span>(<span class="hljs-params"></span>) </span>{};
+</div><div class="hljs-line">f.prototype = obj;
+</div><div class="hljs-line"><span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> f();
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div></code></pre>
+
+<ol start="8"><li rel="8">说出ES6和ES5的区别！</li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line">和ES5中的VAR的区别 
+</div><div class="hljs-line"><span class="hljs-number">1</span>)<span class="hljs-keyword">let</span>不存在变量提升机制（变量不允许在声明之前使用） 
+</div><div class="hljs-line"><span class="hljs-number">2</span>)<span class="hljs-keyword">let</span>不允许重复声明 
+</div><div class="hljs-line"><span class="hljs-number">3</span>)在全局作用域中基于<span class="hljs-keyword">let</span>声明的变量不是<span class="hljs-built_in">window</span>的一个属性，和他没关系 
+</div><div class="hljs-line"><span class="hljs-number">4</span>)<span class="hljs-keyword">typeof</span> 未被声明的变量 =&gt;不是<span class="hljs-literal">undefined</span>而是报错（暂时性死区） 
+</div><div class="hljs-line"><span class="hljs-number">5</span>)<span class="hljs-keyword">let</span>会形成块级作用域（类似于私有作用域，大部分大括号都会形成块作用域） 
+</div><div class="hljs-line"><span class="hljs-number">6</span>)      <span class="hljs-built_in">Promise</span>
+</div><div class="hljs-line">他是Es6中新增加的类。（<span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>）,目的是为了管理js中的异步编程的，所以我们也把他称为 “<span class="hljs-built_in">Promise</span>设计模式”
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">解构赋值
+</div><div class="hljs-line">“…” 拓展、剩余、展开运算符
+</div><div class="hljs-line">ES6中的模板字符串
+</div><div class="hljs-line">箭头函数
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">和普通函数的区别 
+</div><div class="hljs-line"><span class="hljs-number">1</span>)没有<span class="hljs-built_in">arguments</span>，但是可以基于…arg获取实参集合（结果是一个数组） 
+</div><div class="hljs-line"><span class="hljs-number">2</span>)没有自己的<span class="hljs-keyword">this</span>，箭头函数中的<span class="hljs-keyword">this</span>是上下文中的<span class="hljs-keyword">this</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-built_in">Promise</span>（<span class="hljs-keyword">async</span>/<span class="hljs-keyword">await</span>）
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span>（<span class="hljs-title">ES6</span>中创建类的）
+</span></div><div class="hljs-line"><span class="hljs-title">interator</span>（<span class="hljs-title">for</span> <span class="hljs-title">of</span> 循环）
+</div><div class="hljs-line"><span class="hljs-title">Map</span> / <span class="hljs-title">Set</span>
+</div></code></pre>
+
+<ol start="9"><li rel="9">阐述JS中的同步编程和异步编程，以及你在项目中是如何来使用异步操作的！</li>
+</ol>
+
+<pre class="prettyprint hljs-dark"><code class="hljs haml"><div class="hljs-line">-<span class="ruby"> 同步：在一个线程上（主栈/主任务队列）同一个时间只能做一件事情，当前事情完成才能进行下一个事情（先把一个任务进栈执行，执行完出栈，再把下一个任务进栈，上一个任务出栈）
+</span></div><div class="hljs-line">-<span class="ruby"> 异步：在主栈中执行一个任务，但是发现这个任务是一个异步的操作，我们会把他移除主栈，放到等待任务队列中（此时浏览器会分配其他线程监听其他异步任务是否到达指定的执行时间）如果主栈执行完成，监听者会把到达时间的异步任务重新放到主栈中执行，</span>
+</div></code></pre>
+
+<ol start="10"><li rel="10">实现一个Promise</li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Promise</span> </span>{
+</div><div class="hljs-line">    <span class="hljs-keyword">constructor</span>(excutorCallBack) {
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.status = <span class="hljs-string">'pending'</span>;
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.value = <span class="hljs-literal">undefined</span>;
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.fulfilledAry = [];
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.rejectedAry = [];
+</div><div class="hljs-line">        <span class="hljs-comment">//执行excutor</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> resolveFn = <span class="hljs-function">(<span class="hljs-params">result</span>) =&gt;</span> {
+</div><div class="hljs-line">            <span class="hljs-keyword">let</span> timer = setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+</div><div class="hljs-line">                clearTimeout(timer);
+</div><div class="hljs-line">                <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.status !== <span class="hljs-string">'pending'</span>) <span class="hljs-keyword">return</span>;
+</div><div class="hljs-line">                <span class="hljs-keyword">this</span>.status = <span class="hljs-string">'fulfilled'</span>;
+</div><div class="hljs-line">                <span class="hljs-keyword">this</span>.value = result;
+</div><div class="hljs-line">                <span class="hljs-keyword">this</span>.fulfilledAry.forEach(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> {
+</div><div class="hljs-line">                    item(<span class="hljs-keyword">this</span>.value)
+</div><div class="hljs-line">                })
+</div><div class="hljs-line">            }, <span class="hljs-number">0</span>);
+</div><div class="hljs-line">        };
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> rejectFn = <span class="hljs-function">(<span class="hljs-params">reason</span>) =&gt;</span> {
+</div><div class="hljs-line">            <span class="hljs-keyword">let</span> timer = setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+</div><div class="hljs-line">                clearTimeout(timer);
+</div><div class="hljs-line">                <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.status !== <span class="hljs-string">'pending'</span>) <span class="hljs-keyword">return</span>;
+</div><div class="hljs-line">                <span class="hljs-keyword">this</span>.status = <span class="hljs-string">'rejected'</span>;
+</div><div class="hljs-line">                <span class="hljs-keyword">this</span>.value = reason;
+</div><div class="hljs-line">                <span class="hljs-keyword">this</span>.rejectedAry.forEach(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> {
+</div><div class="hljs-line">                    item(<span class="hljs-keyword">this</span>.value)
+</div><div class="hljs-line">                })
+</div><div class="hljs-line">            }, <span class="hljs-number">0</span>);
+</div><div class="hljs-line">        };
+</div><div class="hljs-line">        <span class="hljs-keyword">try</span> {
+</div><div class="hljs-line">            excutorCallBack(resolveFn, rejectFn);
+</div><div class="hljs-line">        } <span class="hljs-keyword">catch</span> (err) {
+</div><div class="hljs-line">            <span class="hljs-comment">/*有异常信息按照rejected状态处理*/</span>
+</div><div class="hljs-line">            rejectFn(err);
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">    }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    then(fulfilledCallBack, rejectedCallBack) {
+</div><div class="hljs-line">        <span class="hljs-keyword">typeof</span> fulfilledCallBack !== <span class="hljs-string">'function'</span> ? fulfilledCallBack = <span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> result : <span class="hljs-literal">null</span>;
+</div><div class="hljs-line">        <span class="hljs-keyword">typeof</span> rejectedCallBack !== <span class="hljs-string">'function'</span> ? rejectedCallBack = <span class="hljs-function"><span class="hljs-params">reason</span> =&gt;</span> {
+</div><div class="hljs-line">            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(reason.message);
+</div><div class="hljs-line">        } : <span class="hljs-literal">null</span>;
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">        <span class="hljs-comment">//=&gt;返回一个新的PROMISE实例</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> {
+</div><div class="hljs-line">            <span class="hljs-keyword">this</span>.fulfilledAry.push(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+</div><div class="hljs-line">                <span class="hljs-keyword">try</span> {
+</div><div class="hljs-line">                    <span class="hljs-keyword">let</span> x = fulfilledCallBack(<span class="hljs-keyword">this</span>.value);
+</div><div class="hljs-line">                    x <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Promise</span> ? x.then(resolve, reject) : resolve(x);
+</div><div class="hljs-line">                } <span class="hljs-keyword">catch</span> (err) {
+</div><div class="hljs-line">                    reject(err);
+</div><div class="hljs-line">                }
+</div><div class="hljs-line">            });
+</div><div class="hljs-line">            <span class="hljs-keyword">this</span>.rejectedAry.push(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+</div><div class="hljs-line">                <span class="hljs-keyword">try</span> {
+</div><div class="hljs-line">                    <span class="hljs-keyword">let</span> x = rejectedCallBack(<span class="hljs-keyword">this</span>.value);
+</div><div class="hljs-line">                    x <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Promise</span> ? x.then(resolve, reject) : resolve(x);
+</div><div class="hljs-line">                } <span class="hljs-keyword">catch</span> (err) {
+</div><div class="hljs-line">                    reject(err);
+</div><div class="hljs-line">                }
+</div><div class="hljs-line">            });
+</div><div class="hljs-line">        });
+</div><div class="hljs-line">    }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-keyword">catch</span>(rejectedCallBack) {
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.then(<span class="hljs-literal">null</span>, rejectedCallBack);
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">static</span> all(promiseAry=[]){
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve,reject</span>)=&gt;</span>{
+</div><div class="hljs-line">            <span class="hljs-keyword">let</span> index=<span class="hljs-number">0</span>,
+</div><div class="hljs-line">                result=[];
+</div><div class="hljs-line">            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; promiseAry.length; i++) {
+</div><div class="hljs-line">                <span class="hljs-comment">// promiseAry[i]每一个需要处理的promise实例</span>
+</div><div class="hljs-line">                promiseAry[i].then(<span class="hljs-function">(<span class="hljs-params">val</span>)=&gt;</span>{
+</div><div class="hljs-line">                    index++;
+</div><div class="hljs-line">                },reject);
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">        })
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-built_in">module</span>.exports = <span class="hljs-built_in">Promise</span>;
+</div></code></pre>
+
+<h3 id="http-ajax-跨域-18玩家必备技能初级玩家需要了解一些的">HTTP &amp;&amp; AJAX &amp;&amp; 跨域 （18+玩家必备技能，初级玩家需要了解一些的）</h3>
+
+<ol start="1"><li rel="1">写出项目中经常用到的性能优化方案</li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs markdown"><div class="hljs-line">content方面
+</div><div class="hljs-line"><span class="hljs-bullet">1. </span>减少HTTP请求：合并文件、CSS精灵、inline Image
+</div><div class="hljs-line"><span class="hljs-bullet">2. </span>减少DNS查询：DNS查询完成之前浏览器不能从这个主机下载任何任
+</div><div class="hljs-line">何文件。方法：DNS缓存、将资源分布到恰当数量的主机名，平衡并
+</div><div class="hljs-line">行下载和DNS查询
+</div><div class="hljs-line"><span class="hljs-bullet">3. </span>避免重定向：多余的中间访问
+</div><div class="hljs-line"><span class="hljs-bullet">4. </span>使Ajax可缓存
+</div><div class="hljs-line"><span class="hljs-bullet">5. </span>非必须组件延迟加载
+</div><div class="hljs-line"><span class="hljs-bullet">6. </span>未来所需组件预加载
+</div><div class="hljs-line"><span class="hljs-bullet">7. </span>减少DOM元素数量
+</div><div class="hljs-line"><span class="hljs-bullet">8. </span>将资源放到不同的域下：浏览器同时从一个域下载资源的数目有限，
+</div><div class="hljs-line">增加域可以提高并行下载量
+</div><div class="hljs-line"><span class="hljs-bullet">9. </span>减少iframe数量
+</div><div class="hljs-line"><span class="hljs-bullet">10. </span>不要404
+</div><div class="hljs-line">Server方面
+</div><div class="hljs-line"><span class="hljs-bullet">1. </span>使用CDN
+</div><div class="hljs-line"><span class="hljs-bullet">2. </span>添加Expires或者Cache-Control响应头
+</div><div class="hljs-line">HTTP/1.1 200 OK
+</div><div class="hljs-line">Date: Tue, 08 Jul 2014 05:28:43 GMT
+</div><div class="hljs-line">Server: Apache/2
+</div><div class="hljs-line">Last-Modified: Wed, 01 Sep 2004 13:24:52 GMT
+</div><div class="hljs-line">ETag: "40d7-3e3073913b100"
+</div><div class="hljs-line">Accept-Ranges: bytes
+</div><div class="hljs-line">Content-Length: 16599
+</div><div class="hljs-line">Cache-Control: max-age=21600
+</div><div class="hljs-line">Expires: Tue, 08 Jul 2014 11:28:43 GMT
+</div><div class="hljs-line">P3P: policyref="http://www.w3.org/2001/05/P3P/p3p.xml"
+</div><div class="hljs-line">Content-Type: text/html; charset=iso-8859-1
+</div><div class="hljs-line">{"name": "qiu", "age": 25}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-bullet">3. </span>对组件使用Gzip压缩
+</div><div class="hljs-line"><span class="hljs-bullet">4. </span>配置ETag
+</div><div class="hljs-line"><span class="hljs-bullet">5. </span>Flush Buffer Early
+</div><div class="hljs-line"><span class="hljs-bullet">6. </span>Ajax使用GET进行请求
+</div><div class="hljs-line"><span class="hljs-bullet">7. </span>避免空src的img标签
+</div><div class="hljs-line">Cookie方面
+</div><div class="hljs-line"><span class="hljs-bullet">1. </span>减小cookie大小
+</div><div class="hljs-line"><span class="hljs-bullet">2. </span>引入资源的域名不要包含cookie
+</div><div class="hljs-line">css方面
+</div><div class="hljs-line"><span class="hljs-bullet">1. </span>将样式表放到页面顶部
+</div><div class="hljs-line"><span class="hljs-bullet">2. </span>不使用CSS表达式
+</div><div class="hljs-line"><span class="hljs-bullet">3. </span>使用不使用@import
+</div><div class="hljs-line"><span class="hljs-bullet">4. </span>不使用IE的Filter
+</div><div class="hljs-line">Javascript方面
+</div><div class="hljs-line"><span class="hljs-bullet">1. </span>将脚本放到页面底部
+</div><div class="hljs-line"><span class="hljs-bullet">2. </span>将javascript和css从外部引入
+</div><div class="hljs-line"><span class="hljs-bullet">3. </span>压缩javascript和css
+</div><div class="hljs-line"><span class="hljs-bullet">4. </span>删除不需要的脚本
+</div><div class="hljs-line"><span class="hljs-bullet">5. </span>减少DOM访问
+</div><div class="hljs-line"><span class="hljs-bullet">6. </span>合理设计事件监听器
+</div><div class="hljs-line">图片方面
+</div><div class="hljs-line"><span class="hljs-bullet">1. </span>优化图片：根据实际颜色需要选择色深、压缩
+</div><div class="hljs-line"><span class="hljs-bullet">2. </span>优化css精灵
+</div><div class="hljs-line"><span class="hljs-bullet">3. </span>不要在HTML中拉伸图片
+</div><div class="hljs-line"><span class="hljs-bullet">4. </span>保证favicon.ico小并且可缓存
+</div><div class="hljs-line">移动方面
+</div><div class="hljs-line"><span class="hljs-bullet">1. </span>保证组件小于25k
+</div><div class="hljs-line"><span class="hljs-bullet">2. </span>Pack Components into a Multipart Document
+</div></code></pre>
+
+<ol start="2"><li rel="2">从浏览器地址栏输入URL到显示页面，中间都经历了什么（尽可能写详细，最好回答出TCP的三次握手和四次挥手，以及浏览器加载页面的细节）</li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs markdown"><div class="hljs-line"><span class="hljs-bullet">1. </span>在浏览器地址栏输入URL
+</div><div class="hljs-line"><span class="hljs-bullet">2. </span>浏览器查看缓存，如果请求资源在缓存中并且新鲜，跳转到转码步骤
+</div><div class="hljs-line"><span class="hljs-code">     1. 如果资源未缓存，发起新请求</span>
+</div><div class="hljs-line"><span class="hljs-code">     2. 如果已缓存，检验是否足够新鲜，足够新鲜直接提供给客户端，否则</span>
+</div><div class="hljs-line"><span class="hljs-code">      与服务器进行验证。</span>
+</div><div class="hljs-line"><span class="hljs-code">     3. 检验新鲜通常有两个HTTP头进行控制 Expires 和 Cache-Control ：</span>
+</div><div class="hljs-line">HTTP1.0提供Expires，值为一个绝对时间表示缓存新鲜日期
+</div><div class="hljs-line">HTTP1.1增加了Cache-Control: max-age=,值为以秒为单位的最
+</div><div class="hljs-line">大新鲜时间
+</div><div class="hljs-line"><span class="hljs-bullet">3. </span>浏览器解析URL获取协议，主机，端口，path
+</div><div class="hljs-line"><span class="hljs-bullet">4. </span>浏览器组装一个HTTP（GET）请求报文
+</div><div class="hljs-line"><span class="hljs-bullet">5. </span>浏览器获取主机ip地址，过程如下：
+</div><div class="hljs-line"><span class="hljs-code">    1. 浏览器缓存</span>
+</div><div class="hljs-line"><span class="hljs-code">    2. 本机缓存</span>
+</div><div class="hljs-line"><span class="hljs-code">    3. hosts文件</span>
+</div><div class="hljs-line"><span class="hljs-code">    4. 路由器缓存</span>
+</div><div class="hljs-line"><span class="hljs-code">    5. ISP DNS缓存</span>
+</div><div class="hljs-line"><span class="hljs-code">    6. DNS递归查询（可能存在负载均衡导致每次IP不一样）</span>
+</div><div class="hljs-line"><span class="hljs-bullet">6. </span>打开一个socket与目标IP地址，端口建立TCP链接，三次握手如下：
+</div><div class="hljs-line"><span class="hljs-code">    1. 客户端发送一个TCP的SYN=1，Seq=X的包到服务器端口</span>
+</div><div class="hljs-line"><span class="hljs-code">    2. 服务器发回SYN=1， ACK=X+1， Seq=Y的响应包</span>
+</div><div class="hljs-line"><span class="hljs-code">    3. 客户端发送ACK=Y+1， Seq=Z</span>
+</div><div class="hljs-line"><span class="hljs-bullet">7. </span>TCP链接建立后发送HTTP请求
+</div><div class="hljs-line"><span class="hljs-bullet">8. </span>服务器接受请求并解析，将请求转发到服务程序，如虚拟主机使用HTTP
+</div><div class="hljs-line">Host头部判断请求的服务程序
+</div><div class="hljs-line"><span class="hljs-bullet">9. </span>服务器检查HTTP请求头是否包含缓存验证信息如果验证缓存新鲜，返回
+</div><div class="hljs-line">304等对应状态码
+</div><div class="hljs-line"><span class="hljs-bullet">10. </span>处理程序读取完整请求并准备HTTP响应，可能需要查询数据库等操作
+</div><div class="hljs-line"><span class="hljs-bullet">11. </span>服务器将响应报文通过TCP连接发送回浏览器
+</div><div class="hljs-line"><span class="hljs-bullet">12. </span>浏览器接收HTTP响应，然后根据情况选择关闭TCP连接或者保留重用，关
+</div><div class="hljs-line">闭TCP连接的四次握手如下：
+</div><div class="hljs-line"><span class="hljs-code">     1. 主动方发送Fin=1， Ack=Z， Seq= X报文</span>
+</div><div class="hljs-line"><span class="hljs-code">     2. 被动方发送ACK=X+1， Seq=Z报文</span>
+</div><div class="hljs-line"><span class="hljs-code">     3. 被动方发送Fin=1， ACK=X， Seq=Y报文</span>
+</div><div class="hljs-line"><span class="hljs-code">     4. 主动方发送ACK=Y， Seq=X报文</span>
+</div><div class="hljs-line"><span class="hljs-bullet">13. </span>浏览器检查响应状态吗：是否为1XX，3XX， 4XX， 5XX，这些情况处理
+</div><div class="hljs-line">与2XX不同
+</div><div class="hljs-line"><span class="hljs-bullet">14. </span>如果资源可缓存，进行缓存
+</div><div class="hljs-line"><span class="hljs-bullet">15. </span>对响应进行解码（例如gzip压缩）
+</div><div class="hljs-line"><span class="hljs-bullet">16. </span>根据资源类型决定如何处理（假设资源为HTML文档）
+</div><div class="hljs-line"><span class="hljs-bullet">17. </span>解析HTML文档，构件DOM树，下载资源，构造CSSOM树，执行js脚
+</div><div class="hljs-line">本，这些操作没有严格的先后顺序，以下分别解释
+</div><div class="hljs-line"><span class="hljs-bullet">18. </span>构建DOM树：
+</div><div class="hljs-line"><span class="hljs-code">    1. Tokenizing：根据HTML规范将字符流解析为标记</span>
+</div><div class="hljs-line"><span class="hljs-code">    2. Lexing：词法分析将标记转换为对象并定义属性和规则</span>
+</div><div class="hljs-line"><span class="hljs-code">    3. DOM construction：根据HTML标记关系将对象组成DOM树</span>
+</div><div class="hljs-line"><span class="hljs-bullet">19. </span>解析过程中遇到图片、样式表、js文件，启动下载
+</div><div class="hljs-line"><span class="hljs-bullet">20. </span>构建CSSOM树：
+</div><div class="hljs-line"><span class="hljs-code">    1. Tokenizing：字符流转换为标记流</span>
+</div><div class="hljs-line"><span class="hljs-code">    2. Node：根据标记创建节点</span>
+</div><div class="hljs-line"><span class="hljs-code">    3. CSSOM：节点创建CSSOM树</span>
+</div><div class="hljs-line"><span class="hljs-bullet">21. </span>根据DOM树和CSSOM树构建渲染树:
+</div><div class="hljs-line"><span class="hljs-code">    1. 从DOM树的根节点遍历所有可见节点，不可见节点包括：</span>
+</div><div class="hljs-line"><span class="hljs-code">     1） script , meta 这样本身不可见的标签。2)被css隐藏的节点，如</span>
+</div><div class="hljs-line"><span class="hljs-code">    display: none</span>
+</div><div class="hljs-line"><span class="hljs-code">    2. 对每一个可见节点，找到恰当的CSSOM规则并应用</span>
+</div><div class="hljs-line"><span class="hljs-code">    3. 发布可视节点的内容和计算样式</span>
+</div><div class="hljs-line"><span class="hljs-bullet">22. </span>js解析如下：
+</div><div class="hljs-line"><span class="hljs-code">    1. 浏览器创建Document对象并解析HTML，将解析到的元素和文本节</span>
+</div><div class="hljs-line"><span class="hljs-code">    点添加到文档中，此时document.readystate为loading</span>
+</div><div class="hljs-line"><span class="hljs-code">    2. HTML解析器遇到没有async和defer的script时，将他们添加到文档</span>
+</div><div class="hljs-line"><span class="hljs-code">    中，然后执行行内或外部脚本。这些脚本会同步执行，并且在脚本下</span>
+</div><div class="hljs-line"><span class="hljs-code">    载和执行时解析器会暂停。这样就可以用document.write()把文本插</span>
+</div><div class="hljs-line"><span class="hljs-code">    入到输入流中。同步脚本经常简单定义函数和注册事件处理程序，他</span>
+</div><div class="hljs-line"><span class="hljs-code">    们可以遍历和操作script和他们之前的文档内容</span>
+</div><div class="hljs-line"><span class="hljs-code">    3. 当解析器遇到设置了async属性的script时，开始下载脚本并继续解析</span>
+</div><div class="hljs-line"><span class="hljs-code">    文档。脚本会在它下载完成后尽快执行，但是解析器不会停下来等它</span>
+</div><div class="hljs-line"><span class="hljs-code">    下载。异步脚本禁止使用document.write()，它们可以访问自己</span>
+</div><div class="hljs-line"><span class="hljs-code">    script和之前的文档元素</span>
+</div><div class="hljs-line"><span class="hljs-code">    4. 当文档完成解析，document.readState变成interactive</span>
+</div><div class="hljs-line"><span class="hljs-code">    5. 所有defer脚本会按照在文档出现的顺序执行，延迟脚本能访问完整</span>
+</div><div class="hljs-line"><span class="hljs-code">    文档树，禁止使用document.write()</span>
+</div><div class="hljs-line"><span class="hljs-code">    6. 浏览器在Document对象上触发DOMContentLoaded事件</span>
+</div><div class="hljs-line"><span class="hljs-code">    7. 此时文档完全解析完成，浏览器可能还在等待如图片等内容加载，等</span>
+</div><div class="hljs-line"><span class="hljs-code">    这些内容完成载入并且所有异步脚本完成载入和执行，</span>
+</div><div class="hljs-line"><span class="hljs-code">    document.readState变为complete,window触发load事件</span>
+</div><div class="hljs-line"><span class="hljs-bullet">23. </span>显示页面（HTML解析过程中会逐步显示页面）
+</div></code></pre>
+
+<ol start="3"><li rel="3">说出你所熟知的HTTP状态码！GET和POST有啥区别！</li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs excel"><div class="hljs-line"><span class="hljs-number">200</span> OK 成功(只能证明服务器成功返回信息了，但是信息不一定是你业务需要的)
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-number">301</span> Moved Permanently 永久转移（永久重定向） =&gt;域名更改，访问原始域名重定向到新的域名
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-number">302</span> Move temporarily 临时转移（临时重定向 =&gt;<span class="hljs-number">307</span>）
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">=&gt;网站现在是基于HTTPS协议运作的，如果访问的是HTTP协议，会基于<span class="hljs-number">307</span>重定向到HTTPS协议上
+</div><div class="hljs-line"> =&gt;<span class="hljs-number">302</span>一般用作服务器负载均衡：当一台服务器达到最大并发数的时候，会把后续访问的用户临时转移到其它的服务器机组上处理
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">=&gt;偶尔真实项目中会把所有的图片放到单独的服务器上“图片处理服务器”，这样减少主服务器的压力，当用户向主服务器访问图片的时候，主服务器都把它转移到图片服务器上处理
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-number">304</span> <span class="hljs-built_in">Not</span> Modified 设置缓存
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">=&gt;对于不经常更新的资源文件，例如：CSS/JS/HTML/IMG等，服务器会结合客户端设置<span class="hljs-number">304</span>缓存，第一次加载过这些资源就缓存到客户端了，下次再获取的时候，是从缓存中获取；如果资源更新了，服务器端会通过最后修改时间来强制让客户端从服务器重新拉取；基于CTRL+<span class="hljs-symbol">F5</span>强制刷新页面，<span class="hljs-number">304</span>做的缓存就没有用了。
+</div><div class="hljs-line"><span class="hljs-number">400</span> Bad Request 请求参数错误
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-number">401</span> Unauthorized 无权限访问
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-number">404</span> <span class="hljs-built_in">Not</span> Found 找不到资源(地址不存在)
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-number">413</span> Request Entity Too <span class="hljs-built_in">Large</span> 和服务器交互的内容资源超过服务器最大限制
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-number">500</span> Internal Server Error 未知的服务器错误
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-number">503</span> Service Unavailable 服务器超负荷
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">[传递给服务器信息的方式不一样] GET是基于URL地址“问号传参”的方式把信息传递给服务器，POST是基于“请求主体”把信息传递给服务器
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  [GET]
+</div><div class="hljs-line">  xhr.open('GET','/temp/list?xxx=xxx&amp;xxx=xxx')
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  [POST]
+</div><div class="hljs-line">  xhr.send('xxx=xxx&amp;xxx=xxx')
+</div><div class="hljs-line">GET一般应用于拿（给服务器的会少一些），而POST给服务器的很多，如果POST是基于问号传参方式来搞会出现一些问题：URL会拼接很长，浏览器对于URL的长度有有最大限度（谷歌<span class="hljs-number">8</span>KB 火狐<span class="hljs-number">7</span>KB IE2KB ...），超过的部分浏览器就把它截掉了 =&gt;所以GET请求可以基于URL传参，而POST都是使用请求主体传递（请求主体理论上是没有限制的，真实项目中我们会自己做大小限制，防止上传过大信息导致请求迟迟完不成）
+</div><div class="hljs-line">[GET不安全，POST相对安全] 因为GET是基于“问号传参”把信息传递给服务器的，容易被骇客进行URL劫持，POST是基于请求主体传递的，相对来说不好被劫持；所以登录、注册等涉及安全性的交互操作，我们都应该用POST请求；
+</div><div class="hljs-line">[GET会产生不可控制的缓存,POST不会] 不可控：不是想要就要，想不要就不要的，这是浏览器自主记忆的缓存，我们无法基于JS控制，真实项目中我们都会把这个缓存干掉 GET请求产生缓存是因为：连续多次向相同的地址（并且传递的参数信息也是相同的）发送请求，浏览器会把之前获取的数据从缓存中拿到返回，导致无法获取服务器最新的数据（POST不会）
+</div></code></pre>
+
+<ol start="4"><li rel="4">什么是HTTP报文，你熟知的报文都有哪些！</li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs lsl"><div class="hljs-line">客户端请求的内容和服务器端响应的内容总称为HTTP报文 包括以下部分：
+</div><div class="hljs-line"><span class="hljs-number">1</span>、起始行
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">请求起始行
+</div><div class="hljs-line">响应起始行
+</div><div class="hljs-line"><span class="hljs-number">2</span>、首部（头）
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">请求头：内置请求头、自定义请求头
+</div><div class="hljs-line">响应头：内置响应头、自定义响应头
+</div><div class="hljs-line">通用头：请求和响应的都有
+</div><div class="hljs-line"><span class="hljs-number">3</span>、主体
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">请求主体
+</div><div class="hljs-line">响应主体
+</div></code></pre>
+
+<ol start="5"><li rel="5">能说下304具体怎样实现吗？</li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs mathematica"><div class="hljs-line"><span class="hljs-number">04</span> 的标准解释是：<span class="hljs-keyword">Not</span> Modified 客户端有缓冲的文档并发出了一个条件性的请求（一般是提供<span class="hljs-keyword">If</span>-Modified-Since头表示客户只想比指定日期更新的文档）。服务器告诉客户，原来缓冲的文档还可以继续使用。 
+</div><div class="hljs-line">如 果客户端在请求一个文件的时候，发现自己缓存的文件有 <span class="hljs-keyword">Last</span> Modified ，那么在请求中会包含 <span class="hljs-keyword">If</span> Modified Since ，这个时间就是缓存文件的 <span class="hljs-keyword">Last</span> Modified 。因此，如果请求中包含 <span class="hljs-keyword">If</span> Modified Since，就说明已经有缓存在客户端。只要判断这个时间和当前请求的文件的修改时间就可以确定是返回 <span class="hljs-number">304</span> 还是 <span class="hljs-number">200</span> 。对于静态文件，例如：CSS、图片，服务器会自动完成 <span class="hljs-keyword">Last</span> Modified 和 <span class="hljs-keyword">If</span> Modified Since 的比较，完成缓存或者更新。但是对于动态页面，就是动态产生的页面，往往没有包含 <span class="hljs-keyword">Last</span> Modified 信息，这样浏览器、网关等都不会做缓存，也就是在每次请求的时候都完成一个 <span class="hljs-number">200</span> 的请求。 
+</div><div class="hljs-line">因此，对于动态页面做缓存加速，首先要在 Response 的 HTTP Header 中增加 <span class="hljs-keyword">Last</span> Modified 定义，其次根据 Request 中的 <span class="hljs-keyword">If</span> Modified Since 和被请求内容的更新时间来返回 <span class="hljs-number">200</span> 或者 <span class="hljs-number">304</span> 。虽然在返回 <span class="hljs-number">304</span> 的时候已经做了一次数据库查询，但是可以避免接下来更多的数据库查询，并且没有返回页面内容而只是一个 HTTP Header，从而大大的降低带宽的消耗，对于用户的感觉也是提高。 
+</div><div class="hljs-line">当这些缓存有效的时候，通过 HttpWatch 查看一个请求会得到这样的结果： 
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">第一次访问 <span class="hljs-number">200</span> 
+</div><div class="hljs-line">鼠标点击二次访问 (Cache) 
+</div><div class="hljs-line">按F5刷新 <span class="hljs-number">304</span> 
+</div><div class="hljs-line">按Ctrl+F5强制刷新 <span class="hljs-number">200</span> 
+</div><div class="hljs-line">如果是这样的就说明缓存真正有效了。
+</div></code></pre>
+
+<ol start="6"><li rel="6">跨域是什么？http协议中如何判断跨域？如何解决跨域问题？ </li>
+</ol>
+
+<pre class="prettyprint hljs-dark"><code class="hljs elixir"><div class="hljs-line">跨域，指的是浏览器不能执行其他网站的脚本。它是由浏览器的同源策略造成的，是浏览器施加的安全限制。
+</div><div class="hljs-line">所谓同源是指，域名，协议，端口均相同，不明白没关系，举个栗子：
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-symbol">http:</span>/<span class="hljs-regexp">/www.123.com/index</span>.html 调用 <span class="hljs-symbol">http:</span>/<span class="hljs-regexp">/www.123.com/server</span>.php （非跨域）
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-symbol">http:</span>/<span class="hljs-regexp">/www.123.com/index</span>.html 调用 <span class="hljs-symbol">http:</span>/<span class="hljs-regexp">/www.456.com/server</span>.php （主域名不同<span class="hljs-symbol">:</span><span class="hljs-number">123</span>/<span class="hljs-number">456</span>，跨域）
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-symbol">http:</span>/<span class="hljs-regexp">/abc.123.com/index</span>.html 调用 <span class="hljs-symbol">http:</span>/<span class="hljs-regexp">/def.123.com/server</span>.php （子域名不同<span class="hljs-symbol">:abc/def</span>，跨域）
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-symbol">http:</span>/<span class="hljs-regexp">/www.123.com:8080/index</span>.html 调用 <span class="hljs-symbol">http:</span>/<span class="hljs-regexp">/www.123.com:8081/server</span>.php （端口不同<span class="hljs-symbol">:</span><span class="hljs-number">8080</span>/<span class="hljs-number">8081</span>，跨域）
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-symbol">http:</span>/<span class="hljs-regexp">/www.123.com/index</span>.html 调用 <span class="hljs-symbol">https:</span>/<span class="hljs-regexp">/www.123.com/server</span>.php （协议不同<span class="hljs-symbol">:http/https</span>，跨域）
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">请注意：localhost和<span class="hljs-number">127.0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span>虽然都指向本机，但也属于跨域。
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">浏览器执行javascript脚本时，会检查这个脚本属于哪个页面，如果不是同源页面，就不会被执行。
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">解决办法：
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-number">1</span>、JSONP：
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">使用方式就不赘述了，但是要注意JSONP只支持GET请求，不支持POST请求。
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-number">2</span>、代理：
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">例如www.<span class="hljs-number">123</span>.com/index.html需要调用www.<span class="hljs-number">456</span>.com/server.php，可以写一个接口www.<span class="hljs-number">123</span>.com/server.php，由这个接口在后端去调用www.<span class="hljs-number">456</span>.com/server.php并拿到返回值，然后再返回给index.html，这就是一个代理的模式。相当于绕过了浏览器端，自然就不存在跨域问题。
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-number">3</span>、PHP端修改header（XHR2方式）
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">在php接口脚本中加入以下两句即可：
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">header(<span class="hljs-string">'Access-Control-Allow-Origin:*'</span>);<span class="hljs-regexp">//</span>允许所有来源访问
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">header(<span class="hljs-string">'Access-Control-Allow-Method:POST,GET'</span>);<span class="hljs-regexp">//</span>允许访问的方式
+</div></code></pre>
+
+<ol start="7"><li rel="7">HTTP2具体内容？SDPY了解么？</li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs lsl"><div class="hljs-line">PDY为speedy（单词原意：快速的）的缩写，读音也就是speedy。
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">SPDY协议已发布过<span class="hljs-number">4</span>个草案，分别为版本<span class="hljs-number">1</span>、<span class="hljs-number">2</span>、<span class="hljs-number">3</span>、<span class="hljs-number">3.1</span>。目前版本<span class="hljs-number">4</span>已在试验阶段，但未发布，Chromium里已有一些针对版本<span class="hljs-number">4</span>的代码。
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">SPDY对比HTTP的优势：
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">复用连接，可在一个TCP连接上传送多个资源。应对了TCP慢启动的特性。
+</div><div class="hljs-line">请求分优先级，重要的资源优先传送。
+</div><div class="hljs-line">HTTP头部数据也被压缩，省流量。
+</div><div class="hljs-line">服务器端可主动连接客户端来推送资源（Server Push）。
+</div><div class="hljs-line">缺点：
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">单连接会因TCP线头阻塞（head-of-line blocking）的特性而传输速度受限。加上存在可能丢包的情况，其负面影响已超过压缩头部和优先级控制带来的好处。
+</div><div class="hljs-line">由于这些缺点，SPDY在小网站（资源文件数量较少）的效果不明显，有可能比多并发连接更慢。（由此催生了QUIC）
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">HTTP/<span class="hljs-number">2</span>由标准化组织来制定，是基于SPDY的，差别是：
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">增加了HTTP/<span class="hljs-number">1.1</span> Upgrade的机制，可在TCP上直接使用HTTP/<span class="hljs-number">2</span>，不像SPDY那样必须在TLS上。
+</div><div class="hljs-line">HTTPS连接时使用NPN的规范版ALPN（Applcation Layer Protocol Negociation）。
+</div><div class="hljs-line">更完善的协议商讨和确认流程。
+</div><div class="hljs-line">更完善的Server Push流程。
+</div><div class="hljs-line">增加控制帧的种类，并对帧格式考虑得更细致。
+</div><div class="hljs-line">有新算法HPACK专门压缩SPDY header block。
+</div><div class="hljs-line">HTTP/<span class="hljs-number">2</span>文档带有一些示例和详细说明，这是SPDY没有的。
+</div></code></pre>
+
+<ol start="8"><li rel="8">HTTPS如何实现？tsl/ssl是什么？对称加密、非对称加密在什么时候、对什么数据加密？</li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs livecodeserver"><div class="hljs-line"><span class="hljs-keyword">https</span>：在<span class="hljs-keyword">http</span>(超文本传输协议)基础上提出的一种安全的<span class="hljs-keyword">http</span>协议，因此可以称为安全的超文本传输协议。<span class="hljs-keyword">http</span>协议直接放置在TCP协议之上，而<span class="hljs-keyword">https</span>提出在<span class="hljs-keyword">http</span>和TCP中间加上一层加密层。从发送端看，这一层负责把<span class="hljs-keyword">http</span>的内容加密后送到下层的TCP，从接收方看，这一层负责将TCP送来的数据解密还原成<span class="hljs-keyword">http</span>的内容。
+</div><div class="hljs-line">　SSL：（Secure Socket Layer，安全套接字层），位于可靠的面向连接的网络层协议和应用层协议之间的一种协议层。SSL通过互相认证、使用数字签名确保完整性、使用加密确保私密性，以实现客户端和服务器之间的安全通讯。该协议由两层组成：SSL记录协议和SSL握手协议。
+</div><div class="hljs-line">　　TLS：(Transport Layer Security，传输层安全协议)，用于两个应用程序之间提供保密性和数据完整性。该协议由两层组成：TLS记录协议和TLS握手协议。
+</div><div class="hljs-line"><span class="hljs-comment">#非对称加密</span>
+</div><div class="hljs-line">服务器建立公钥： 每一次启动 sshd 服务时，该服务会主动去找 /etc/ssh/ssh_host* 的文件，若系统刚刚安装完成时，由于没有这些公钥，因此 sshd 会主动去计算出这些需要的公钥，同时也会计算出服务器自己需要的私钥
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">客户端主动联机请求： 若客户端想要联机到 ssh 服务器，则需要使用适当的客户端程序来联机，包括 ssh, putty 等客户端程序连接
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">服务器传送公钥给客户端： 接收到客户端的要求后，服务器便将第一个步骤取得的公钥传送给客户端使用 (此时应是明码传送，反正公钥本来就是给大家使用的)
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">客户端记录并比对服务器的公钥数据及随机计算自己的公私钥： 若客户端第一次连接到此服务器，则会将服务器的公钥记录到客户端的用户家目录内的 ~/.ssh/known_hosts 。若是已经记录过该服务器的公钥，则客户端会去比对此次接收到的与之前的记录是否有差异。若接受此公钥， 则开始计算客户端自己的公私钥
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">回传客户端的公钥到服务器端： 用户将自己的公钥传送给服务器。此时服务器：具有服务器的私钥与客户端的公钥，而客户端则是： 具有服务器的公钥以及客户端自己的私钥，你会看到，在此次联机的服务器与客户端的密钥系统 (公钥+私钥) 并不一样，所以才称为非对称加密系统
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">开始双向加解密： (<span class="hljs-number">1</span>)服务器到客户端：服务器传送数据时，拿用户的公钥加密后送出。客户端接收后，用自己的私钥解密 (
+</div></code></pre>
+
+<ol start="9"><li rel="9">DNS劫持是什么？</li>
+</ol>
+
+<pre class="prettyprint hljs-dark"><code class="hljs armasm"><div class="hljs-line"><span class="hljs-symbol">DNS</span>劫持又称域名劫持，是指在劫持的网络范围内拦截域名解析的请求，分析请求的域名，把审查范围以外的请求放行，否则返回假的<span class="hljs-built_in">IP</span>地址或者什么都不做使请求失去响应，其效果就是对特定的网络不能访问或访问的是假网址。
+</div></code></pre>
+
+<ol start="10"><li rel="10">封装一个AJAX库！</li>
+</ol>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="hljs javascript"><div class="hljs-line">;(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">anonymous</span>(<span class="hljs-params">window</span>) </span>{
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;设置默认的参数配置项</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> _default = {
+</div><div class="hljs-line">        <span class="hljs-attr">method</span>: <span class="hljs-string">'GET'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">url</span>: <span class="hljs-string">''</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">baseURL</span>: <span class="hljs-string">''</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">headers</span>: {},
+</div><div class="hljs-line">        <span class="hljs-attr">dataType</span>: <span class="hljs-string">'JSON'</span>,
+</div><div class="hljs-line">        <span class="hljs-attr">data</span>: <span class="hljs-literal">null</span>,<span class="hljs-comment">//=&gt;POST系列请求基于请求主体传递给服务器的内容</span>
+</div><div class="hljs-line">        params: <span class="hljs-literal">null</span>,<span class="hljs-comment">//=&gt;GET系列请求基于问号传参传递给服务器的内容</span>
+</div><div class="hljs-line">        cache: <span class="hljs-literal">true</span>
+</div><div class="hljs-line">    };
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;基于PROMISE设计模式管理AJAX请求</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> ajaxPromise = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ajaxPromise</span>(<span class="hljs-params">options</span>) </span>{
+</div><div class="hljs-line">        <span class="hljs-comment">//=&gt;OPTIONS中融合了:默认配置信息、用户基于DEFAULTS修改的信息、用户执行GET/POST方法时候传递的配置信息，越靠后的优先级越高</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> {url, baseURL, method, data, dataType, headers, cache, params} = options;
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">        <span class="hljs-comment">//=&gt;把传递的参数进一步进行处理</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span> (<span class="hljs-regexp">/^(GET|DELETE|HEAD|OPTIONS)$/i</span>.test(method)) {
+</div><div class="hljs-line">            <span class="hljs-comment">//=&gt;GET系列</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span> (params) {
+</div><div class="hljs-line">                url += <span class="hljs-string">`<span class="hljs-subst">${ajaxPromise.check(url)}</span><span class="hljs-subst">${ajaxPromise.formatData(params)}</span>`</span>;
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span> (cache === <span class="hljs-literal">false</span>) {
+</div><div class="hljs-line">                url += <span class="hljs-string">`<span class="hljs-subst">${ajaxPromise.check(url)}</span>_=<span class="hljs-subst">${+(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>())}</span>`</span>;
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">            data = <span class="hljs-literal">null</span>;<span class="hljs-comment">//=&gt;GET系列请求主体就是什么都不放</span>
+</div><div class="hljs-line">        } <span class="hljs-keyword">else</span> {
+</div><div class="hljs-line">            <span class="hljs-comment">//=&gt;POST系列</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span> (data) {
+</div><div class="hljs-line">                data = ajaxPromise.formatData(data);
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">        }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">        <span class="hljs-comment">//=&gt;基于PROMISE发送AJAX</span>
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> {
+</div><div class="hljs-line">            <span class="hljs-keyword">let</span> xhr = <span class="hljs-keyword">new</span> XMLHttpRequest;
+</div><div class="hljs-line">            xhr.open(method, <span class="hljs-string">`<span class="hljs-subst">${baseURL}</span><span class="hljs-subst">${url}</span>`</span>);
+</div><div class="hljs-line">            <span class="hljs-comment">//=&gt;如果HEADERS存在,我们需要设置请求头</span>
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span> (headers !== <span class="hljs-literal">null</span> &amp;&amp; <span class="hljs-keyword">typeof</span> headers === <span class="hljs-string">'object'</span>) {
+</div><div class="hljs-line">                <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> attr <span class="hljs-keyword">in</span> headers) {
+</div><div class="hljs-line">                    <span class="hljs-keyword">if</span> (headers.hasOwnProperty(attr)) {
+</div><div class="hljs-line">                        <span class="hljs-keyword">let</span> val = headers[attr];
+</div><div class="hljs-line">                        <span class="hljs-keyword">if</span> (<span class="hljs-regexp">/[\u4e00-\u9fa5]/</span>.test(val)) {
+</div><div class="hljs-line">                            <span class="hljs-comment">//=&gt;VAL中包含中文:我们把它进行编码</span>
+</div><div class="hljs-line">                            <span class="hljs-comment">//encodeURIComponent/decodeURIComponent</span>
+</div><div class="hljs-line">                            val = <span class="hljs-built_in">encodeURIComponent</span>(val);
+</div><div class="hljs-line">                        }
+</div><div class="hljs-line">                        xhr.setRequestHeader(attr, val);
+</div><div class="hljs-line">                    }
+</div><div class="hljs-line">                }
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">            xhr.onreadystatechange = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+</div><div class="hljs-line">                <span class="hljs-keyword">if</span> (xhr.readyState === <span class="hljs-number">4</span>) {
+</div><div class="hljs-line">                    <span class="hljs-keyword">if</span> (<span class="hljs-regexp">/^(2|3)\d{2}$/</span>.test(xhr.status)) {
+</div><div class="hljs-line">                        <span class="hljs-keyword">let</span> result = xhr.responseText;
+</div><div class="hljs-line">                        dataType = dataType.toUpperCase();
+</div><div class="hljs-line">                        dataType === <span class="hljs-string">'JSON'</span> ? result = <span class="hljs-built_in">JSON</span>.parse(result) : (dataType === <span class="hljs-string">'XML'</span> ? result = xhr.responseXML : <span class="hljs-literal">null</span>);
+</div><div class="hljs-line">                        resolve(result);
+</div><div class="hljs-line">                        <span class="hljs-keyword">return</span>;
+</div><div class="hljs-line">                    }
+</div><div class="hljs-line">                    reject(xhr.statusText);
+</div><div class="hljs-line">                }
+</div><div class="hljs-line">            };
+</div><div class="hljs-line">            xhr.send(data);
+</div><div class="hljs-line">        });
+</div><div class="hljs-line">    };
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;把默认配置暴露出去,后期用户在使用的时候可以自己设置一些基础的默认值(发送AJAX请求的时候按照用户配置的信息进行处理)</span>
+</div><div class="hljs-line">    ajaxPromise.defaults = _default;
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;把对象转换为URLENCODED格式的字符串</span>
+</div><div class="hljs-line">    ajaxPromise.formatData = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">formatData</span>(<span class="hljs-params">obj</span>) </span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> str = <span class="hljs-string">``</span>;
+</div><div class="hljs-line">        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> attr <span class="hljs-keyword">in</span> obj) {
+</div><div class="hljs-line">            <span class="hljs-keyword">if</span> (obj.hasOwnProperty(attr)) {
+</div><div class="hljs-line">                str += <span class="hljs-string">`<span class="hljs-subst">${attr}</span>=<span class="hljs-subst">${obj[attr]}</span>&amp;`</span>;
+</div><div class="hljs-line">            }
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> str.substring(<span class="hljs-number">0</span>, str.length - <span class="hljs-number">1</span>);
+</div><div class="hljs-line">    };
+</div><div class="hljs-line">    ajaxPromise.check = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">check</span>(<span class="hljs-params">url</span>) </span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">return</span> url.indexOf(<span class="hljs-string">'?'</span>) &gt; <span class="hljs-number">-1</span> ? <span class="hljs-string">'&amp;'</span> : <span class="hljs-string">'?'</span>;
+</div><div class="hljs-line">    };
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;GET</span>
+</div><div class="hljs-line">    [<span class="hljs-string">'get'</span>, <span class="hljs-string">'delete'</span>, <span class="hljs-string">'head'</span>, <span class="hljs-string">'options'</span>].forEach(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> {
+</div><div class="hljs-line">        ajaxPromise[item] = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">anonymous</span>(<span class="hljs-params">url, options = {}</span>) </span>{
+</div><div class="hljs-line">            options = {
+</div><div class="hljs-line">                ..._default,<span class="hljs-comment">//=&gt;默认值或者基于defaults修改的值</span>
+</div><div class="hljs-line">                ...options,<span class="hljs-comment">//=&gt;用户调取方法传递的配置项</span>
+</div><div class="hljs-line">                url: url,<span class="hljs-comment">//=&gt;请求的URL地址(第一个参数:默认配置项和传递的配置项中都不会出现URL，只能这样获取)</span>
+</div><div class="hljs-line">                method: item.toUpperCase()<span class="hljs-comment">//=&gt;以后执行肯定是ajaxPromise.head执行，不会设置METHODS这个配置项，我们自己需要配置才可以</span>
+</div><div class="hljs-line">            };
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> ajaxPromise(options);
+</div><div class="hljs-line">        };
+</div><div class="hljs-line">    });
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">//=&gt;POST</span>
+</div><div class="hljs-line">    [<span class="hljs-string">'post'</span>, <span class="hljs-string">'put'</span>, <span class="hljs-string">'patch'</span>].forEach(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> {
+</div><div class="hljs-line">        ajaxPromise[item] = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">anonymous</span>(<span class="hljs-params">url, data = {}, options = {}</span>) </span>{
+</div><div class="hljs-line">            options = {
+</div><div class="hljs-line">                ..._default,
+</div><div class="hljs-line">                ...options,
+</div><div class="hljs-line">                <span class="hljs-attr">url</span>: url,
+</div><div class="hljs-line">                <span class="hljs-attr">method</span>: item.toUpperCase(),
+</div><div class="hljs-line">                <span class="hljs-attr">data</span>: data
+</div><div class="hljs-line">            };
+</div><div class="hljs-line">            <span class="hljs-keyword">return</span> ajaxPromise(options);
+</div><div class="hljs-line">        };
+</div><div class="hljs-line">    });
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-built_in">window</span>.ajaxPromise = ajaxPromise;
+</div><div class="hljs-line">})(<span class="hljs-built_in">window</span>);
+</div></code></pre></div></body></html>
